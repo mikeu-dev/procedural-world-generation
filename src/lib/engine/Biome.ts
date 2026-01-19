@@ -1,3 +1,5 @@
+import { NoiseGenerator } from './Noise';
+
 /**
  * Represents a biome type in the world.
  */
@@ -13,40 +15,120 @@ export interface Biome {
 }
 
 /**
- * List of available biomes and their generation criteria.
- * Ordered generally from lowest elevation/moisture to highest.
+ * Handles dynamic biome generation based on a world seed.
  */
-export const BIOMES: Biome[] = [
-    { name: 'Deep Water', color: '#1e3a8a', minElevation: -1.0, minMoisture: -1.0 },
-    { name: 'Water', color: '#3b82f6', minElevation: -0.2, minMoisture: -1.0 },
-    { name: 'Sand', color: '#fcd34d', minElevation: 0.0, minMoisture: -1.0 },
-    { name: 'Grass', color: '#22c55e', minElevation: 0.1, minMoisture: -0.2 },
-    { name: 'Forest', color: '#15803d', minElevation: 0.1, minMoisture: 0.2 },
-    { name: 'Mountain', color: '#57534e', minElevation: 0.6, minMoisture: -1.0 },
-    { name: 'Snow', color: '#f3f4f6', minElevation: 0.8, minMoisture: -1.0 },
-];
+export class BiomeGenerator {
+    private biomes: Biome[] = [];
+    private waterLevel: number = 0; // -0.2 is default
+    private moistureBias: number = 0; // 0 is default
 
-/**
- * Determines the biome for a given location based on environmental factors.
- * 
- * @param elevation - The height of the terrain at this point.
- * @param moisture - The moisture/humidity level at this point.
- * @returns The matching Biome object.
- */
-export function getBiome(elevation: number, moisture: number): Biome {
-    // Simple logic: Water override
-    if (elevation < 0) {
-        if (elevation < -0.25) return BIOMES.find(b => b.name === 'Deep Water')!;
-        return BIOMES.find(b => b.name === 'Water')!;
+    constructor(seed: string) {
+        this.generatePalette(seed);
     }
 
-    // Land logic
-    if (elevation > 0.8) return BIOMES.find(b => b.name === 'Snow')!;
-    if (elevation > 0.6) return BIOMES.find(b => b.name === 'Mountain')!;
+    public getBiomes(): Biome[] {
+        return this.biomes;
+    }
 
-    // Flat lands dependent on moisture
-    if (moisture < -0.2) return BIOMES.find(b => b.name === 'Sand')!;
-    if (moisture > 0.3) return BIOMES.find(b => b.name === 'Forest')!;
+    private generatePalette(seed: string) {
+        const rng = new Random(seed);
 
-    return BIOMES.find(b => b.name === 'Grass')!;
+        // Planet Personality
+        const alienMode = rng.nextFloat() > 0.3; // 70% chance of alien colors
+        const baseHue = rng.nextFloat() * 360;
+
+        // Planet Type (Dry, Wet, Normal)
+        const planetType = rng.nextFloat();
+        if (planetType < 0.2) {
+            this.waterLevel = -0.6; // Dry
+            this.moistureBias = -0.3;
+        } else if (planetType > 0.8) {
+            this.waterLevel = 0.3; // Water World
+            this.moistureBias = 0.2;
+        } else {
+            this.waterLevel = -0.2; // Normal
+            this.moistureBias = 0;
+        }
+
+        // Color Generators
+        const getWaterColor = (depth: number) => {
+            if (!alienMode) return depth === 1 ? '#1e3a8a' : '#3b82f6';
+            const hue = (baseHue + 180) % 360; // Opposite of land
+            const lightness = depth === 1 ? 30 : 50;
+            return `hsl(${hue}, 70%, ${lightness}%)`;
+        };
+
+        const getLandColor = (type: 'sand' | 'grass' | 'forest' | 'mountain' | 'snow') => {
+            if (!alienMode) {
+                switch (type) {
+                    case 'sand': return '#fcd34d';
+                    case 'grass': return '#22c55e';
+                    case 'forest': return '#15803d';
+                    case 'mountain': return '#57534e';
+                    case 'snow': return '#f3f4f6';
+                }
+            }
+
+            let hue = baseHue;
+            let sat = 60;
+            let lig = 50;
+
+            switch (type) {
+                case 'sand': hue += 40; sat -= 20; lig += 20; break;
+                case 'grass': hue += 0; break; // Base
+                case 'forest': hue -= 10; lig -= 15; break;
+                case 'mountain': sat = 10; lig = 40; break; // Greyish
+                case 'snow': sat = 0; lig = 90; break; // White
+            }
+            return `hsl(${hue % 360}, ${sat}%, ${lig}%)`;
+        };
+
+        this.biomes = [
+            { name: 'Deep Water', color: getWaterColor(1), minElevation: -1.0, minMoisture: -1.0 },
+            { name: 'Water', color: getWaterColor(0), minElevation: this.waterLevel, minMoisture: -1.0 },
+            { name: 'Sand', color: getLandColor('sand'), minElevation: this.waterLevel + 0.2, minMoisture: -1.0 },
+            { name: 'Grass', color: getLandColor('grass'), minElevation: this.waterLevel + 0.3, minMoisture: -0.2 + this.moistureBias },
+            { name: 'Forest', color: getLandColor('forest'), minElevation: this.waterLevel + 0.3, minMoisture: 0.2 + this.moistureBias },
+            { name: 'Mountain', color: getLandColor('mountain'), minElevation: 0.6, minMoisture: -1.0 },
+            { name: 'Snow', color: getLandColor('snow'), minElevation: 0.8, minMoisture: -1.0 },
+        ];
+    }
+
+    public getBiome(elevation: number, moisture: number): Biome {
+        // Water logic
+        if (elevation < this.waterLevel) {
+            if (elevation < this.waterLevel - 0.25) return this.biomes.find(b => b.name === 'Deep Water')!;
+            return this.biomes.find(b => b.name === 'Water')!;
+        }
+
+        // Land logic
+        if (elevation > 0.8) return this.biomes.find(b => b.name === 'Snow')!;
+        if (elevation > 0.6) return this.biomes.find(b => b.name === 'Mountain')!;
+
+        // Flat lands dependent on moisture
+        const adjustedMoisture = moisture + this.moistureBias;
+
+        if (adjustedMoisture < -0.2) return this.biomes.find(b => b.name === 'Sand')!;
+        if (adjustedMoisture > 0.3) return this.biomes.find(b => b.name === 'Forest')!;
+
+        return this.biomes.find(b => b.name === 'Grass')!;
+    }
+}
+
+// Simple seeded random to avoid deps
+class Random {
+    private seed: number;
+    constructor(seedStr: string) {
+        let h = 2166136261 >>> 0;
+        for (let i = 0; i < seedStr.length; i++) {
+            h = Math.imul(h ^ seedStr.charCodeAt(i), 16777619);
+        }
+        this.seed = h;
+    }
+    nextFloat() {
+        this.seed = Math.imul(this.seed ^ this.seed >>> 16, 2246822507);
+        this.seed = Math.imul(this.seed ^ this.seed >>> 13, 3266489909);
+        this.seed ^= this.seed >>> 16;
+        return (this.seed >>> 0) / 4294967296;
+    }
 }

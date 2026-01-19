@@ -1,5 +1,6 @@
 import { Chunk, CHUNK_SIZE } from './Chunk';
 import { NoiseGenerator } from './Noise';
+import { BiomeGenerator } from './Biome';
 
 /**
  * Manages the infinite game world.
@@ -10,6 +11,8 @@ export class World {
     private chunks: Map<string, Chunk> = new Map();
     /** The noise generator used for the entire world. */
     private noise: NoiseGenerator;
+    /** The biome generator for this world. */
+    public biomeGenerator: BiomeGenerator;
     /** The seed used for the world. */
     private seed: string;
 
@@ -20,6 +23,7 @@ export class World {
     constructor(seed: string) {
         this.seed = seed;
         this.noise = new NoiseGenerator(seed);
+        this.biomeGenerator = new BiomeGenerator(seed);
     }
 
     /**
@@ -33,7 +37,7 @@ export class World {
     public getChunk(chunkX: number, chunkY: number): Chunk {
         const key = `${chunkX},${chunkY}`;
         if (!this.chunks.has(key)) {
-            const chunk = new Chunk(chunkX, chunkY, this.noise);
+            const chunk = new Chunk(chunkX, chunkY, this.noise, this.biomeGenerator);
             this.chunks.set(key, chunk);
         }
         return this.chunks.get(key)!;

@@ -1,5 +1,5 @@
 import type { NoiseGenerator } from './Noise';
-import { getBiome, BIOMES } from './Biome';
+import type { BiomeGenerator } from './Biome';
 
 /**
  * The width and height of a chunk in tiles.
@@ -18,7 +18,7 @@ export class Chunk {
     public y: number;
     /** 
      * Flat array of tile data. 
-     * Each value corresponds to an index in the BIOMES array.
+     * Each value corresponds to an index in the world's biome palette.
      */
     public tiles: Uint8Array;
     /** 
@@ -34,23 +34,27 @@ export class Chunk {
      * @param x - The chunk's X coordinate.
      * @param y - The chunk's Y coordinate.
      * @param noise - The noise generator instance to use for terrain generation.
+     * @param biomeGenerator - The biome generator for the world.
      */
-    constructor(x: number, y: number, noise: NoiseGenerator) {
+    constructor(x: number, y: number, noise: NoiseGenerator, biomeGenerator: BiomeGenerator) {
         this.x = x;
         this.y = y;
         this.tiles = new Uint8Array(CHUNK_SIZE * CHUNK_SIZE);
         this.objects = new Uint8Array(CHUNK_SIZE * CHUNK_SIZE);
         this.debugColor = `hsl(${Math.random() * 360}, 50%, 50%)`;
 
-        this.generate(noise);
+        this.generate(noise, biomeGenerator);
     }
 
     /**
      * Generates the terrain and objects for this chunk using the noise generator.
      * Populates `tiles` and `objects` arrays.
      * @param noise - The noise generator.
+     * @param biomeGenerator - The biome generator.
      */
-    private generate(noise: NoiseGenerator) {
+    private generate(noise: NoiseGenerator, biomeGenerator: BiomeGenerator) {
+        const biomes = biomeGenerator.getBiomes();
+
         for (let dy = 0; dy < CHUNK_SIZE; dy++) {
             for (let dx = 0; dx < CHUNK_SIZE; dx++) {
                 const worldX = this.x * CHUNK_SIZE + dx;
@@ -59,8 +63,8 @@ export class Chunk {
                 const elevation = noise.getFBM(worldX * 0.01, worldY * 0.01, 4, 2, 0.5);
                 const moisture = noise.getFBM(worldX * 0.02 + 1000, worldY * 0.02 + 1000, 2);
 
-                const biome = getBiome(elevation, moisture);
-                const biomeIndex = BIOMES.indexOf(biome);
+                const biome = biomeGenerator.getBiome(elevation, moisture);
+                const biomeIndex = biomes.indexOf(biome);
 
                 const index = dy * CHUNK_SIZE + dx;
                 this.tiles[index] = biomeIndex !== -1 ? biomeIndex : 0;

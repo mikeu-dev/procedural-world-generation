@@ -1,6 +1,6 @@
 import type { World } from './World';
 import { CHUNK_SIZE } from './Chunk';
-import { BIOMES } from './Biome';
+import type { Biome } from './Biome';
 
 /**
  * Handles rendering of the game world to an HTML5 Canvas.
@@ -81,9 +81,10 @@ export class Renderer {
         const tilesInScreenY = Math.ceil(this.height / this.scale);
 
         const chunks = world.getChunksInRect(cameraX, cameraY, tilesInScreenX, tilesInScreenY);
+        const biomes = world.biomeGenerator.getBiomes();
 
         for (const chunk of chunks) {
-            this.renderChunk(chunk, cameraX, cameraY);
+            this.renderChunk(chunk, cameraX, cameraY, biomes);
         }
 
         // Debug Info
@@ -101,8 +102,9 @@ export class Renderer {
      * @param chunk - The chunk to render.
      * @param camX - The camera X position.
      * @param camY - The camera Y position.
+     * @param biomes - The biome palette for the current world.
      */
-    private renderChunk(chunk: any, camX: number, camY: number) {
+    private renderChunk(chunk: any, camX: number, camY: number, biomes: Biome[]) {
         const startX = chunk.x * CHUNK_SIZE;
         const startY = chunk.y * CHUNK_SIZE;
 
@@ -120,7 +122,7 @@ export class Renderer {
 
                 // Draw Tile
                 const biomeIndex = chunk.tiles[index];
-                const biome = BIOMES[biomeIndex];
+                const biome = biomes[biomeIndex];
 
                 const px = Math.floor(screenOffsetX + dx * this.scale);
                 const py = Math.floor(screenOffsetY + dy * this.scale);
