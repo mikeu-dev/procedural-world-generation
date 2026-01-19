@@ -1,38 +1,53 @@
-# sv
+# Procedural World Generation
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A high-performance procedural terrain generation engine built with modern web technologies. This project demonstrates real-time terrain generation using noise algorithms, featuring infinite world exploration and dynamic level of detail.
 
-## Creating a project
+## Features
 
-If you're seeing this, you've probably already done this step. Congrats!
+- **Procedural Terrain**: Deterministic landscape generation powered by Simplex Noise.
+- **Infinite World**: Seamless chunk loading system for endless exploration.
+- **Interactive Camera**: Smooth navigation controls (WASD/Arrows) with zoom capabilities.
+- **Real-time Rendering**: Optimized HTML5 Canvas rendering pipeline.
+- **Customizable Seeds**: Seed-based generation for reproducible worlds.
 
-```sh
-# create a new project in the current directory
-npx sv create
+## Technology Stack
 
-# create a new project in my-app
-npx sv create my-app
-```
+- **Framework**: [Svelte](https://svelte.dev)
+- **Build System**: [Vite](https://vitejs.dev)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com)
+- **Core Algorithms**: [Simplex Noise](https://github.com/jwagner/simplex-noise.js)
 
-## Developing
+## Getting Started
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+### Prerequisites
 
-```sh
-npm run dev
+- Node.js (Latest LTS version recommended)
+- npm
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+### Installation
 
-## Building
+1. Clone the repository and install dependencies:
 
-To create a production version of your app:
+   ```bash
+   npm install
+   ```
 
-```sh
+2. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+3. Open your browser and navigate to `http://localhost:5173`.
+
+## Building for Production
+
+To build the application for production:
+
+```bash
 npm run build
 ```
 
-You can preview the production build with `npm run preview`.
+## License
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+Private Repository. All rights reserved.
