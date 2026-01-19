@@ -1,10 +1,18 @@
 import { createNoise2D } from 'simplex-noise';
 import type { NoiseFunction2D } from 'simplex-noise';
 
+/**
+ * Handles procedural noise generation using Simplex Noise.
+ * Supports standard 2D noise and Fractal Brownian Motion (FBM).
+ */
 export class NoiseGenerator {
     private noise2D: NoiseFunction2D;
     private seed: string;
 
+    /**
+     * Creates a new NoiseGenerator instance.
+     * @param seed - The seed string for random generation. Defaults to a random string.
+     */
     constructor(seed: string = Math.random().toString()) {
         this.seed = seed;
         // Simple hash-based seeding for simplex-noise (it uses Math.random fallback if not provided custom PRNG, 
@@ -19,6 +27,11 @@ export class NoiseGenerator {
         this.noise2D = createNoise2D(this.createSeededRandom(seed));
     }
 
+    /**
+     * Creates a simple seeded pseudo-random number generator.
+     * @param seed - The seed string.
+     * @returns A function that returns a number between 0 and 1.
+     */
     private createSeededRandom(seed: string): () => number {
         // Simple hash function to generate a numeric seed
         let h = 0xdeadbeef;
@@ -35,14 +48,25 @@ export class NoiseGenerator {
     }
 
     /**
-     * Get noise value between -1 and 1
+     * Gets a raw noise value at the specified coordinates.
+     * @param x - The x-coordinate.
+     * @param y - The y-coordinate.
+     * @returns A noise value between -1 and 1.
      */
     public get(x: number, y: number): number {
         return this.noise2D(x, y);
     }
 
     /**
-     * Get fractal noise (FBM)
+     * Generates Fractal Brownian Motion (FBM) noise.
+     * FBM combines multiple layers (octaves) of noise for more detail.
+     * 
+     * @param x - The x-coordinate.
+     * @param y - The y-coordinate.
+     * @param octaves - Number of layers of noise to combine. (Default: 4)
+     * @param lacunarity - Frequency multiplier per octave. (Default: 2.0)
+     * @param gain - Amplitude multiplier per octave (persistence). (Default: 0.5)
+     * @returns A normalized noise value approximately between -1 and 1.
      */
     public getFBM(x: number, y: number, octaves: number = 4, lacunarity: number = 2.0, gain: number = 0.5): number {
         let total = 0;

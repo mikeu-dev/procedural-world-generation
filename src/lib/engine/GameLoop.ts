@@ -1,6 +1,10 @@
 export type UpdateCallback = (deltaTime: number) => void;
 export type RenderCallback = () => void;
 
+/**
+ * Manages the main game loop using requestAnimationFrame.
+ * Provides a reliable loop with delta time calculation.
+ */
 export class GameLoop {
     private lastTime: number = 0;
     private animationFrameId: number | null = null;
@@ -8,11 +12,19 @@ export class GameLoop {
     private onRender: RenderCallback;
     private isRunning: boolean = false;
 
+    /**
+     * Creates a new GameLoop instance.
+     * @param onUpdate - Callback function for game logic updates. Receives deltaTime in seconds.
+     * @param onRender - Callback function for rendering.
+     */
     constructor(onUpdate: UpdateCallback, onRender: RenderCallback) {
         this.onUpdate = onUpdate;
         this.onRender = onRender;
     }
 
+    /**
+     * Starts the game loop if it is not already running.
+     */
     public start(): void {
         if (this.isRunning) return;
         this.isRunning = true;
@@ -20,6 +32,9 @@ export class GameLoop {
         this.loop(this.lastTime);
     }
 
+    /**
+     * Stops the game loop.
+     */
     public stop(): void {
         this.isRunning = false;
         if (this.animationFrameId !== null) {
@@ -28,6 +43,10 @@ export class GameLoop {
         }
     }
 
+    /**
+     * The internal loop function called by requestAnimationFrame.
+     * @param time - The current time provided by requestAnimationFrame.
+     */
     private loop = (time: number): void => {
         if (!this.isRunning) return;
 
