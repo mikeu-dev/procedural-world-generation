@@ -44,6 +44,12 @@
         // Reset camera optionally or keep it? Let's keep it.
     }
 
+    function changeWorld() {
+        // Generate a random seed
+        seed = Math.random().toString(36).slice(2, 9);
+        initWorld();
+    }
+
     onDestroy(() => {
         if (typeof window !== "undefined") {
             window.removeEventListener("keydown", handleKeyDown);
@@ -131,6 +137,12 @@
                     class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1 rounded text-sm transition-colors cursor-pointer"
                 >
                     Gen
+                </button>
+                <button
+                    onclick={changeWorld}
+                    class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded text-sm transition-colors cursor-pointer"
+                >
+                    Change World
                 </button>
             </div>
         </div>
