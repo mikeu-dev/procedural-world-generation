@@ -5,10 +5,11 @@ A high-performance procedural terrain generation engine built with modern web te
 ## Features
 
 - **Procedural Terrain**: Deterministic landscape generation powered by Simplex Noise.
+- **Planetary Biomes**: Dynamic biome generation creating unique "planets" with distinct color palettes and terrain rules for every seed.
 - **Infinite World**: Seamless chunk loading system for endless exploration.
 - **Interactive Camera**: Smooth navigation controls (WASD/Arrows) with zoom capabilities.
 - **Real-time Rendering**: Optimized HTML5 Canvas rendering pipeline.
-- **Customizable Seeds**: Seed-based generation for reproducible worlds.
+- **Customizable Seeds**: Seed-based generation for reproducible worlds, with a quick "Change World" feature to instantly explore new variations.
 
 ## Technology Stack
 
