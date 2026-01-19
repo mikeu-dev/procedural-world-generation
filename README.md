@@ -48,6 +48,11 @@ To build the application for production:
 npm run build
 ```
 
+## Contributing
+
+Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+
 ## License
 
-Private Repository. All rights reserved.
+Copyright © 2026 mikeu-dev. All rights reserved.
+Licensed under the [MIT License](LICENSE).
