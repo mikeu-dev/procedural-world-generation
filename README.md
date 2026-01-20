@@ -40,14 +40,28 @@ A high-performance procedural terrain generation engine built with modern web te
    ```
 
 3. Open your browser and navigate to `http://localhost:5173`.
+4. To check code quality:
+
+   ```bash
+   npm run lint
+   npm run format
+   ```
+
+5. To run tests:
+
+   ```bash
+   npm run test
+   ```
 
 ## Building for Production
 
-To build the application for production:
+To build the application for production (configured for Vercel):
 
 ```bash
 npm run build
 ```
+
+The application uses `@sveltejs/adapter-vercel`. Ensure you have your Vercel account connected to your repository for automatic deployments.
 
 ## Contributing
 

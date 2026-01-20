@@ -27,10 +27,10 @@ Thank you for your interest in contributing to the Procedural World Generation p
 
 ## Coding Standards
 
--   **Style**: Follow the existing code style. We use **Prettier** for formatting.
--   **Structure**: Keep components modular and reusable. Place engine logic in `$lib/engine`.
--   **Performance**: Since this is a procedural generation engine, prioritize performance and memory efficiency.
--   **Commits**: Use [Conventional Commits](https://www.conventionalcommits.org/) for commit messages.
+- **Style**: Follow the existing code style. We use **Prettier** for formatting.
+- **Structure**: Keep components modular and reusable. Place engine logic in `$lib/engine`.
+- **Performance**: Since this is a procedural generation engine, prioritize performance and memory efficiency.
+- **Commits**: Use [Conventional Commits](https://www.conventionalcommits.org/) for commit messages.
 
 ## Reporting Issues
 
